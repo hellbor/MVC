@@ -27,5 +27,9 @@ namespace ContosoUniversity.Models
 
 		[Display(Name ="Препод")]
 		public string FullName { get => $"{LastName} {FirstName}"; }
+
+		//Navigation properties:
+		public ICollection<CourseAssignment>CourseAssignments { get; set; }
+		public OfficeAssignment OfficeAssignment { get; set; }
 	}
 }
