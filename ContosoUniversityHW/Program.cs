@@ -1,4 +1,19 @@
+using ContosoUniversityHW.Data;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder
+	.Services
+	.AddDbContext<UniversityContextHW>
+	(
+		options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+	);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
