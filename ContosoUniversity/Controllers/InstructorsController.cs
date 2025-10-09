@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ContosoUniversity.Data;
 using ContosoUniversity.Models;
+using ContosoUniversity.Models.ViewModels;
 
 namespace ContosoUniversity.Controllers
 {
@@ -20,9 +21,32 @@ namespace ContosoUniversity.Controllers
         }
 
         // GET: Instructors
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? id, int? courseID)
         {
-            return View(await _context.Instructors.ToListAsync());
+            InstructorIndexData viewModel = new InstructorIndexData();
+            viewModel.Instructors = 
+                await _context.Instructors
+                .Include(i => i.OfficeAssignment)
+                .Include(i => i.CourseAssignments)
+                    .ThenInclude(i => i.Course)
+                        .ThenInclude(i => i.Enrollments)
+                            .ThenInclude(i => i.Student)
+                .Include(i => i.CourseAssignments)
+                    .ThenInclude(i => i.Course)
+                        .ThenInclude(i => i.Department)
+                .AsNoTracking()
+                .OrderBy(i => i.LastName)
+                .ToListAsync();
+
+            if (id != null)
+            {
+                ViewData["InstructorID"] = id.Value;
+                Instructor instructor = viewModel.Instructors.Where(i => i.ID == id.Value).Single();
+                viewModel.Courses = instructor.CourseAssignments.Select(s => s.Course);
+            }
+
+            return View(viewModel);
+            //return View(await _context.Instructors.ToListAsync());
         }
 
         // GET: Instructors/Details/5

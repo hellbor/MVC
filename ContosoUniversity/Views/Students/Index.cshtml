@@ -22,11 +22,14 @@
 <table class="table">
     <thead>
         <tr>
-            <th>
+           @*  <th>
                 <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParam"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">LastName</a>
             </th>
             <th>
                 FirstName
+            </th> *@
+            <th>
+                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSotrParam"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Студент</a>
             </th>
             <th>
                 <a asp-action="Index" asp-route-sortOrder="@ViewData["DateSortParam"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">EnrollmentDate</a>
@@ -38,11 +41,14 @@
         @foreach (var item in Model)
         {
             <tr>
-                <td>
+                @* <td>
                     @Html.DisplayFor(modelItem => item.LastName)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.FirstName)
+                </td> *@
+                <td>
+                    @Html.DisplayFor(modelItem => item.FullName)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.EnrollmentDate)
