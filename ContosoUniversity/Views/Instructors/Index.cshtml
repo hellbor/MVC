@@ -16,8 +16,8 @@
 			<th>	Last Name	</th>
 			<th>	First Name	</th>
 			<th>	Hire Date	</th>
-			<th>	Office	</th>
-			<th>	Courses	</th>
+			<th>	Office		</th>
+			<th>	Courses		</th>
 			<th></th>
 		</tr>
 	</thead>
@@ -72,7 +72,7 @@
 			if (item.CourseID == (int?)ViewData["CourseID"]) selectedRow = "table-success";
 			<tr class="@selectedRow">
 				<td>
-					@Html.ActionLink("Selected", "Index", new {})
+					@Html.ActionLink("Selected", "Index", new {item.CourseID})
 				</td>
 				<td>	@item.CourseID			</td>
 				<td>	@item.Title				</td>
@@ -80,4 +80,28 @@
 			</tr>
 		}
 	</table>
+}
+@if(Model.Enrollments != null)
+{
+	if (Model.Enrollments.Count() > 0)
+	{
+	<h3>Students Enrolled in selected Course</h3>
+	<table class="table">
+		<tr>
+			<th>Student</th>
+			<th>Grade</th>
+		</tr>
+		@foreach(Enrollment enrollment in Model.Enrollments)
+		{
+			<tr>
+				<td>	@enrollment.Student.FullName	</td>
+				<td>	@Html.DisplayFor(ModelItem => enrollment.Grade)	</td>
+			</tr>
+		}
+	</table>
+	}
+	else
+	{
+		<h3>No humans passed this way</h3>
+	}
 }
