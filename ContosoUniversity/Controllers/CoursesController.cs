@@ -38,6 +38,7 @@ namespace ContosoUniversity.Controllers
             }
 
             Course course = await _context.Courses
+                .Include(c => c.Department)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.CourseID == id);
             if (course == null)
@@ -68,6 +69,7 @@ namespace ContosoUniversity.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            PopulateDepartmentsDropDownList(course.DepartmentID);
             return View(course);
         }
 
@@ -79,7 +81,9 @@ namespace ContosoUniversity.Controllers
                 return NotFound();
             }
 
-            var course = await _context.Courses.FindAsync(id);
+            var course = await _context.Courses/*.FindAsync(id)*/
+                .AsNoTracking()
+                .FirstOrDefaultAsync(m => m.CourseID == id);
             if (course == null)
             {
                 return NotFound();
@@ -122,6 +126,37 @@ namespace ContosoUniversity.Controllers
             }
             return View(course);
         }
+		[HttpPost, ActionName("Edit")]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> EditPost(int? id)
+		{
+			if (id == null)
+			{
+				return NotFound();
+			}
+
+			var courseToUpdate = await _context.Courses
+				.FirstOrDefaultAsync(c => c.CourseID == id);
+
+			if (await TryUpdateModelAsync<Course>(courseToUpdate,
+				"",
+				c => c.Credits, c => c.DepartmentID, c => c.Title))
+			{
+				try
+				{
+					await _context.SaveChangesAsync();
+				}
+				catch (DbUpdateException)
+				{
+					ModelState.AddModelError("", "Unable to save changes. " +
+						"Try again, and if the problem persists, " +
+						"see your system administrator.");
+				}
+				return RedirectToAction(nameof(Index));
+			}
+			PopulateDepartmentsDropDownList(courseToUpdate.DepartmentID);
+			return View(courseToUpdate);
+		}
 
 		private void PopulateDepartmentsDropDownList(object selectedDepartment = null)
 		{
@@ -140,6 +175,7 @@ namespace ContosoUniversity.Controllers
             }
 
             Course course = await _context.Courses
+                .Include(c => c.Department)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.CourseID == id);
             if (course == null)
